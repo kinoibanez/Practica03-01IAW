@@ -47,3 +47,31 @@
         --admin_email="{{ wordpress_configuracion.WORDPRESS_ADMIN_EMAIL }}"
         --path=/var/www/html
         --allow-root
+    
+    - name: Copiamos el archivo 
+      copy:
+       src: /home/ubuntu/Practica03-01IAW/WordPress/htaccess/.htaccess
+       dest: /var/www/html
+    
+    - name: Pluggin para la seguridad de wordpress.
+      command: sudo wp plugin install wp-staging --activate --path=/var/www/html --allow-root
+
+    - name: Pluggin cualquiera para comprobar que podemos instalarlo.
+      command: sudo wp plugin install wp-staging --activate --path=/var/www/html --allow-root
+
+    - name: Modificamos los links de wordpress.
+      command: wp plugin install wps-hide-login --activate --path=/var/www/html --allow-root
+
+    - name: Modificamos los nombres de las URLS.
+      command: wp option update whl_page "NotFound" --path=/var/www/html --allow-root
+
+    - name: Modificamos la reestructura de Wordpress con los nombres de las entradas.
+      command: wp rewrite structure '/%postname%/' --path=/var/www/html --allow-root
+
+    - name: modificamos por ultima vez los permisos del directorio /var/www/html/
+      file:
+        path: /var/www/html
+        state: directory
+        owner: www-data
+        group: www-data
+        recurse: yes

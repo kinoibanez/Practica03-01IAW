@@ -4,7 +4,6 @@
   become: yes
 
   tasks:
-
     - name: Actualizar los repositorios
       apt:
         update_cache: yes
@@ -22,32 +21,34 @@
           - libapache2-mod-php
         state: present
 
-    - name: Reiniciar el servidor web Apache
-      service:
-        name: apache2
-        state: restarted
-
-    - name: Copiar el archivo de configuración de Apache
-      copy:
-        src: /home/ubuntu/Practica03-01IAW/WordPress/playbooks/templates/000-default.conf
-        dest: /var/www/html/
-        mode: 0755
-
-    - name: Copiamos el archivo de confuración de php.
-      copy:
-        src: /home/ubuntu/Practica03-01IAW/WordPress/php/index.php
-        dest: /var/www/html/
-        mode: 0755
-
     - name: Habilitar el módulo rewrite de Apache
       apache2_module:
         name: rewrite
         state: present
 
-    - name: Cambiar el propietario y grupo del dirctorio de Apache
+    - name: Copiar el archivo de configuración de Apache
+      template:
+        src: templates/000-default.conf
+        dest: /etc/apache2/sites-available/000-default.conf
+        mode: 0644
+      notify: Restart Apache
+
+    - name: Copiamos el archivo de configuración de PHP
+      copy:
+        src: /home/ubuntu/Practica03-01IAW/WordPress/php/index.php
+        dest: /var/www/html/index.php
+        mode: 0755
+
+    - name: Cambiar el propietario y grupo del directorio de Apache
       file:
         path: /var/www/html
         state: directory
         owner: www-data
         group: www-data
         recurse: yes
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
