@@ -28,30 +28,30 @@
       command: wp core download --locale=es_ES --path=/var/www/html --allow-root
 
     - name: Configuración de WordPress CLI
-      command: >
-        wp config create
-        --dbname={{ wordpress.WORDPRESS_DB_NAME }}
-        --dbuser={{ wordpress.WORDPRESS_DB_USER }}
-        --dbpass={{ wordpress.WORDPRESS_DB_PASSWORD }}
-        --dbhost={{ wordpress.WORDPRESS_DB_HOST }}
-        --path=/var/www/html
+      command: 
+        wp config create \
+        --dbname={{ wordpress.WORDPRESS_DB_NAME }} \
+        --dbuser={{ wordpress.WORDPRESS_DB_USER }} \
+        --dbpass={{ wordpress.WORDPRESS_DB_PASSWORD }} \
+        --dbhost={{ wordpress.WORDPRESS_DB_HOST }} \
+        --path=/var/www/html \
         --allow-root
 
     - name: Instalación de WordPress CLI
-      command: >
-        wp core install
-        --url="{{ wordpress_configuracion.CERTIFICATE_DOMAIN }}"
-        --title="{{ wordpress_configuracion.WORDPRESS_TITLE }}"
-        --admin_user="{{ wordpress_configuracion.WORDPRESS_ADMIN_USER }}"
-        --admin_password="{{ wordpress_configuracion.WORDPRESS_ADMIN_PASS }}"
-        --admin_email="{{ wordpress_configuracion.WORDPRESS_ADMIN_EMAIL }}"
-        --path=/var/www/html
+      command: wp core install \
+        --url="{{wordpress_configuracion.CERTIFICATE_DOMAIN}}" \
+        --title="{{wordpress_configuracion.WORDPRESS_TITLE}}" \
+        --admin_user="{{wordpress_configuracion.WORDPRESS_ADMIN_USER}}" \
+        --admin_password="{{wordpress_configuracion.WORDPRESS_ADMIN_PASS}}" \
+        --admin_email="{{wordpress_configuracion.WORDPRESS_ADMIN_EMAIL}}" \
+        --path=/var/www/html \ 
         --allow-root
     
     - name: Copiamos el archivo 
       copy:
        src: /home/ubuntu/Practica03-01IAW/WordPress/htaccess/.htaccess
        dest: /var/www/html
+       mode: 0755
     
     - name: Pluggin para la seguridad de wordpress.
       command: sudo wp plugin install wp-staging --activate --path=/var/www/html --allow-root
@@ -60,13 +60,13 @@
       command: sudo wp plugin install wp-staging --activate --path=/var/www/html --allow-root
 
     - name: Modificamos los links de wordpress.
-      command: wp plugin install wps-hide-login --activate --path=/var/www/html --allow-root
-
+      command: sudo wp plugin install wps-hide-login --activate --path=/var/www/html --allow-root
+    
     - name: Modificamos los nombres de las URLS.
-      command: wp option update whl_page "NotFound" --path=/var/www/html --allow-root
+      command: sudo wp option update whl_page "NotFound" --path=/var/www/html --allow-root
 
     - name: Modificamos la reestructura de Wordpress con los nombres de las entradas.
-      command: wp rewrite structure '/%postname%/' --path=/var/www/html --allow-root
+      command: sudo wp rewrite structure '/%postname%/' --path=/var/www/html --allow-root
 
     - name: modificamos por ultima vez los permisos del directorio /var/www/html/
       file:

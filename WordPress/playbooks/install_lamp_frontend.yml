@@ -20,7 +20,7 @@
           - php-mysql
           - libapache2-mod-php
         state: present
-
+     
     - name: Habilitar el módulo rewrite de Apache
       apache2_module:
         name: rewrite
@@ -30,7 +30,7 @@
       template:
         src: templates/000-default.conf
         dest: /etc/apache2/sites-available/000-default.conf
-        mode: 0644
+        mode: 0755
       notify: Restart Apache
 
     - name: Copiamos el archivo de configuración de PHP
