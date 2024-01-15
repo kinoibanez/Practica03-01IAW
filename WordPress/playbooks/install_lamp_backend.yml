@@ -29,16 +29,16 @@
 
     - name: Crear una base de datos
       mysql_db:
-        name: "{{ db.name }}"
+        name: "{{wordpress.WORDPRESS_DB_NAME}}"
         state: present
         login_unix_socket: /var/run/mysqld/mysqld.sock 
 
     - name: Crear el usuario de la base de datos
       mysql_user:         
-        name: "{{ db.user }}"
-        password: "{{ db.password }}"
-        priv: "{{ db.name }}.*:ALL"
-        host: "%"
+        name: "{{ wordpress.WORDPRESS_DB_USER }}"
+        password: "{{ wordpress.WORDPRESS_DB_PASSWORD }}"
+        priv: "{{ wordpress.WORDPRESS_DB_NAME }}.*:ALL"
+        host: "{{MYSQL.IP_CLIENT_MYSQL}}"
         state: present
         login_unix_socket: /var/run/mysqld/mysqld.sock 
 
@@ -46,7 +46,7 @@
       replace:
         path: /etc/mysql/mysql.conf.d/mysqld.cnf
         regexp: 127.0.0.1
-        replace: 0.0.0.0
+        replace: "{{MYSQL.MYSQL_PRIV}}"
 
     - name: Reiniciamos el servicio de base de datos
       service:

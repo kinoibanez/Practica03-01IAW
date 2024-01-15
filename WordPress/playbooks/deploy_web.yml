@@ -7,59 +7,43 @@
     - ../vars/variables.yml
 
   tasks:
-
-    - name: Descargar el código fuente de PrestaShop
+    - name: Eliminamos las descargas anteriores de wordpress.
+      file:
+        path: /tmp/wp-cli.phar
+        state: absent 
+  
+    - name: Descargamos el código de WordPress con CLI
       get_url:
         url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
         dest: /tmp
-        mode: 0755
+        mode: "+x"
 
-    - name: Instalar unzip
-      apt: 
-        name: unzip
-        state: present
+    - name: Hacemos MV para a /usr/bin para poder usarlo sin la ruta completa
+      command: mv /tmp/wp-cli.phar /usr/local/bin/wp
 
-    - name: Dar permisos ejecutables al archivo.
-      file:
-        path: /tmp/wp-cli.phar
-        state: directory
-        mode: u=rwx, g=rw, o=rx, g+s
-
-    - name: Descomprimir el código fuente de Wodpress para el CLI
-      command: mv /tmp/wp-cli.phar to /var/www/html/
+    - name: Eliminamos instalaciones previas del directorio /var/www/html
+      shell: rm -rf /var/www/html/*
     
     - name: Descargamos el codigo fuente de wpdonwload.
       command: wp core download --locale=es_ES --path=/var/www/html --allow-root
 
-
-    - name: Modificamos los permisos del directorio /var/www/html
-      file:
-        path: /var/www/html
-        owner: --allow-root
-        group: --allow-root
-        recurse: yes
-        mode: 0755
-        
-    - name: Instalar Wordpress de CLI pero wpdonwload.
-      command:
-        wp config create \
-            --dbname={{$WORDPRESS_DB_NAME}} \
-            --dbuser={{WORDPRESS_DB_USER}} \
-            --dbpass={{WORDPRESS_DB_PASSWORD}} \
-            --dbhost={{WORDPRESS_DB_HOST}} \
-            --path=/var/www/html \
-            --allow-root 
-      args:
-        chdir: /var/www/html
-      
-    - name: Instalar Wordpress de CLI pero wpdonwload.
-      command:
-        --url={{CERTIFICATE_DOMAIN}} \
-        --title={{"WORDPRESS_TITLE"}}\
-        --admin_user={{WORDPRESS_ADMIN_USER}} \
-        --admin_password={{WORDPRESS_ADMIN_PASS}} \
-        --admin_email={{WORDPRESS_ADMIN_EMAIL}} \
-        --path=/var/www/html \
+    - name: Configuración de WordPress CLI
+      command: >
+        wp config create
+        --dbname={{ wordpress.WORDPRESS_DB_NAME }}
+        --dbuser={{ wordpress.WORDPRESS_DB_USER }}
+        --dbpass={{ wordpress.WORDPRESS_DB_PASSWORD }}
+        --dbhost={{ wordpress.WORDPRESS_DB_HOST }}
+        --path=/var/www/html
         --allow-root
-      args:
-        chdir: /var/www/html
+
+    - name: Instalación de WordPress CLI
+      command: >
+        wp core install
+        --url="{{ wordpress_configuracion.CERTIFICATE_DOMAIN }}"
+        --title="{{ wordpress_configuracion.WORDPRESS_TITLE }}"
+        --admin_user="{{ wordpress_configuracion.WORDPRESS_ADMIN_USER }}"
+        --admin_password="{{ wordpress_configuracion.WORDPRESS_ADMIN_PASS }}"
+        --admin_email="{{ wordpress_configuracion.WORDPRESS_ADMIN_EMAIL }}"
+        --path=/var/www/html
+        --allow-root
