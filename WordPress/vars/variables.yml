@@ -9,7 +9,7 @@ wordpress:
     WORDPRESS_DB_HOST: 172.31.89.233
 
 wordpress_configuracion:
-    CERTIFICATE_DOMAIN: dominio-joaquin.ddns.net
+    CERTIFICATE_DOMAIN: https://dominio-iawjoaquin.ddns.net
     WORDPRESS_TITLE: "Web de Joaquin"
     WORDPRESS_ADMIN_USER: admin
     WORDPRESS_ADMIN_PASS: admin
