@@ -12,11 +12,10 @@
       apt:
         name: certbot
         state: absent
-    
-    - name: Eliminar certificado y configuración de Certbot para el dominio
-      command: certbot delete --cert-name "{{ certbot.domain }}"
-      ignore_errors: yes
 
+    - name: Eliminar instalaciones de SSL obsoletos
+      command: sudo rm -rf /etc/apache2/sites-available/*
+      
     - name: Instalar Certbot con snap
       command: snap install --classic certbot
 
